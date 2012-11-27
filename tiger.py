@@ -240,12 +240,21 @@ class TigerRoadExpansionHandler(OSMHandler):
             self.fixed = True
             self.num_fixed += 1
 
+    def remove_useless_tags(self):
+        tags = self.tags
+        for tag in ["created_by", "tiger:upload_uuid", "tiger:tlid",
+                    "tiger:source", "tiger:separated", "odbl", "odbl:note"]:
+            if tags.has_key(tag):
+                del(tags[tag])
+
     def transformElement(self):
         suffixes = ['', '_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9']
         for s in suffixes:
             if self.tags.get('name' + s):
                 self.fix_name(s)
-    
+        if self.fixed:
+            self.remove_useless_tags()
+
     def endDocument(self):
         self._close()
         if self.num_fixed == 0:
