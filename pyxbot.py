@@ -1,3 +1,6 @@
+"""
+This file contains the core OSMHandler class, which is used for Python XBots
+"""
 from xml.sax.handler import ContentHandler
 import os
 import codecs
@@ -17,21 +20,20 @@ functions"""
         self.file_counter = 0
         self.out = None
         self.fixed = None
+        self.bot_name = "Pyxbot"
 
     def _open(self):
+        """Open the output file and write the headers"""
         if not os.path.isdir(self.path):
             os.mkdir(self.path)
-        #fh = codecs.open(self.path + '/' + "%s_%04d.osm" %
-        #          (self.file_prefix, self.file_counter), 'w', "utf-8")
         self.fname = self.path + '/' + "%04d.osm" % self.file_counter
-        #print "Opening %s" % self.fname
         fh = codecs.open(self.fname, 'w', "utf-8")
         self.out = fh
         self.out.write('<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n')
         self.out.write('<osm version="0.6" generator="pyxbot">\n')
 
     def _close(self):
-        #print "Closing " + self.fname
+        """Close the output file"""
         self.out.write('</osm>\n')
         self.out.flush()
         self.out.close()
@@ -40,10 +42,11 @@ functions"""
         self.file_counter = self.file_counter + 1
 
     def bump_version(self):
-        self.attrs['version'] = str(int(self.attrs['version']) + 1)
+        """Bump the version number of the element"""
         self.attrs['version'] = str(int(self.attrs['version']) + 1)
 
     def remove_user_changeset(self):
+        """Remove tags from the changeset which we will not use anymore"""
         if self.attrs.get('changeset'):
             del(self.attrs['changeset'])
         if self.attrs.get('uid'):
@@ -57,13 +60,13 @@ functions"""
     def _str_node(self):
         "Return a node as a string"
         if self.tags:
-            s = u'<node %s >\n' % ' '.join([u'%s="%s"' % (x,y)
-                                            for x,y in self.attrs.items()])
-            for key,val in self.tags.items():
+            s = u'<node %s >\n' % ' '.join([u'%s="%s"' % (x, y)
+                                            for x, y in self.attrs.items()])
+            for key, val in self.tags.items():
                 s += u' <tag k="%s" v="%s" />\n' % (escape(key), escape(val))
             s += u'</node>'
         else:
-            s = u'<node %s />\n' % ' '.join(['%s="%s"' % (x,y)
+            s = u'<node %s />\n' % ' '.join(['%s="%s"' % (x, y)
                                             for x,y in self.attrs.items()])
         return s
 
@@ -79,18 +82,20 @@ functions"""
         return s
 
     def _str_relation(self):
+        "Output a relation as a string"
         if self.members or self.tags:
             s = u'<relation %s >\n' % ' '.join([u'%s="%s"' % (x, y)
                                                 for x, y in self.attrs.items()])
-            for member in members:
-                s += u' <member %s />\n' % ' '.join(['%s="%s"' % (x,y)
+            for member in self.members:
+                s += u' <member %s />\n' % ' '.join(['%s="%s"' % (x, y)
                                                      for x,y in member.items()])
             for key, val in self.tags.items():
                 s += u' <tag k="%s" v="%s" />\n' % (escape(key), escape(val))
             s += u'</relation>\n'
         else:
             s = u'<relation %s />\n' % ' '.join([u'%s="%s"' % (x, y)
-                                                 for x, y in self.attrs.items()])
+                                                 for x, y in \
+                                                     self.attrs.items()])
         return s
     def emit(self):
         "Output the current element"
@@ -143,7 +148,7 @@ handler"""
         """Returns the string to delete the element. Please use with
 caution!"""
         self.out.write('<delete version="%s" generator="%s">\n' %
-                       (VERSION, BOTNAME))
+                       ("0.6", self.bot_name))
         self.emit()
         self.out.write('</delete>\n')
 
