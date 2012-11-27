@@ -8,6 +8,7 @@ import argparse
 from pyxbot import OSMHandler
 from os import remove
 import codecs
+import expansions
 
 def add_or_incr(dct, item):
     """Takes a dictionary and item and increments the number on that
@@ -17,88 +18,8 @@ def add_or_incr(dct, item):
     else:
         dct[item] = 1
 
-# Thank you https://www.usps.com/send/official-abbreviations.htm
-road_types = {
-    'Aly': 'Alley',
-    'Anx': 'Annex', ## From USPS
-    'Arc': 'Arcade', ## From USPS
-    'Ave': 'Avenue',
-    'Bch': 'Beach', ## From USPS
-    'Blf': 'Bluff', ## From USPS
-    'Blfs': 'Bluffs', ## From USPS
-    'Blvd': 'Boulevard',
-    'Bnd': 'Bend', ## From USPS
-    'Br': 'Bridge',
-    'Brg': 'Bridge',
-    'Byp': 'Bypass',
-    'Byu': 'Bayoo', ## From USPS
-    'Cir': 'Circle',
-    'Cres': 'Crescent',
-    'Cswy': 'Crossway',
-    'Ct': 'Court',
-    'Ctr': 'Center',
-    'Cv': 'Cove',
-    'Dr': 'Drive',
-    'Expy': 'Expressway',
-    'Expwy': 'Expressway',
-    'FMRd': 'Farm to Market Road',
-    'Fwy': 'Freeway',
-    'Grd': 'Grade',
-    'Hbr': 'Harbor',
-    'Holw': 'Hollow',
-    'Hwy': 'Highway',
-    'Ln': 'Lane',
-    'Lndg': 'Landing',
-    'Mal': 'Mall',
-    'Mtwy': 'Motorway',
-    'Ovps': 'Overpass',
-    'Pky': 'Parkway',
-    'Pkwy': 'Parkway',
-    'Pl': 'Place',
-    'Plz': 'Plaza',
-    'Rd': 'Road',
-    'Rdg': 'Ridge',
-    'RMRd': 'Ranch to Market Road',
-    'Rte': 'Route',
-    'Skwy': 'Skyway',
-    'Sq': 'Square',
-    'St': 'Street',
-    'Ter': 'Terrace',
-    'Tfwy': 'Trafficway',
-    'Thfr': 'Thoroughfare',
-    'Thwy': 'Thruway',
-    'Tpke': 'Turnpike',
-    'Trce': 'Trace',
-    'Trl' : 'Trail',
-    'Tunl': 'Tunnel',
-    'Unp': 'Underpass',
-    'Wkwy': 'Walkway',
-    'Xing': 'Crossing',
-    ### NOT EXPANDED
-    'Way': 'Way',
-    'Walk': 'Walk',
-    'Loop': 'Loop',
-    'Oval': 'Oval',
-    'Ramp': 'Ramp',
-    'Row': 'Row',
-    'Run': 'Run',
-    'Pass': 'Pass',
-    'Spur': 'Spur',
-    'Path': 'Path',
-    'Pike': 'Pike',
-    'Rue': 'Rue',
-    'Mall': 'Mall',
-    }
-
-directions = {
-    'N': 'North',
-    'S': 'South',
-    'E': 'East',
-    'W': 'West',
-    'NE': 'Northeast',
-    'NW': 'Northwest',
-    'SE': 'Southeast',
-    'SW': 'Southwest'}
+road_types = expansions.road_types
+directions = expansions.directions
 
 class TigerRoadExpansionHandler(OSMHandler):
     """This is the TIGER expansion class"""
