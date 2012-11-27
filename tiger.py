@@ -10,6 +10,8 @@ from os import remove
 import codecs
 
 def add_or_incr(dct, item):
+    """Takes a dictionary and item and increments the number on that
+    item in the dictionary (like a set only with a counter)"""
     if dct.has_key(item):
         dct[item] = dct[item] + 1
     else:
@@ -99,6 +101,7 @@ directions = {
     'SW': 'Southwest'}
 
 class TigerRoadExpansionHandler(OSMHandler):
+    """This is the TIGER expansion class"""
     def __init__(self, file_prefix):
         OSMHandler.__init__(self, file_prefix)
         self.selected = 0
@@ -109,6 +112,7 @@ class TigerRoadExpansionHandler(OSMHandler):
         self.ambigious_expansions = {}
 
     def get_road_type(self, suffix = ""):
+        """Retrieves the road type from the element's tiger tags"""
         tags = self.tags
         name = tags.get('name' + suffix)
         namel = name.split()
@@ -121,9 +125,10 @@ class TigerRoadExpansionHandler(OSMHandler):
             add_or_incr(self.unrecognized_tags, road_type)
             # We'll only report this if it's really unique
             if road_type not in road_types.values():
-                self.checkme_ways.append({'name': tags.get('name'),
-                                          'id': self.attrs['id'],
-                                          'reason': 'Unknown road_type (%s)' % road_type})
+                self.checkme_ways.append(
+                    {'name': tags.get('name'),
+                     'id': self.attrs['id'],
+                     'reason': 'Unknown road_type (%s)' % road_type})
             road_type = None
         elif namel.count(road_type) > 1:
             add_or_incr(self.ambigious_expansions, name)
@@ -133,13 +138,15 @@ class TigerRoadExpansionHandler(OSMHandler):
             road_type = None
         elif namel.count(road_type) < 1:
             if not namel.count(road_types[road_type]) >= 1:
-                self.checkme_ways.append({'name': tags.get('name'),
-                                          'id': self.attrs['id'],
-                                          'reason': 'Road type (%s) not in name' % road_type})
+                self.checkme_ways.append(
+                    {'name': tags.get('name'),
+                     'id': self.attrs['id'],
+                     'reason': 'Road type (%s) not in name' % road_type})
             road_type = None
         return road_type
 
     def get_direction_prefix(self, suffix=""):
+        """Retrieves the direction prefix from object using the tiger tags"""
         name = self.tags.get('name' + suffix)
         namel = name.split()
         # Same with the direction tags prefix
@@ -158,6 +165,7 @@ class TigerRoadExpansionHandler(OSMHandler):
         return dir_tag_prefix
 
     def get_direction_suffix(self, suffix=""):
+        """Retrieves the direction suffix from object using the tiger tags"""
         tags = self.tags
         name = tags.get('name' + suffix)
         namel = name.split()
@@ -204,32 +212,40 @@ class TigerRoadExpansionHandler(OSMHandler):
             try:
                 long_direction = directions[dir_tag_prefix]
             except KeyError:
-                self.checkme_ways.append({'name': tags.get('name'),
-                                          'id': self.attrs['id'],
-                                          'reason': 'Direction prefix (%s) not in directions list' % dir_tag_prefix})
+                self.checkme_ways.append(
+                    {'name': tags.get('name'),
+                     'id': self.attrs['id'],
+                     'reason': 'Direction prefix (%s) not in directions list' \
+                         % dir_tag_prefix})
             try:
                 indx = namel.index(dir_tag_prefix)
                 namel[indx] = long_direction
             except ValueError:
-                self.checkme_ways.append({'name': tags.get('name'),
-                                          'id': self.attrs['id'],
-                                          'reason': 'Direction prefix (%s) not in name' % dir_tag_prefix})
+                self.checkme_ways.append(
+                    {'name': tags.get('name'),
+                     'id': self.attrs['id'],
+                     'reason': 'Direction prefix (%s) not in name' \
+                         % dir_tag_prefix})
 
         dir_tag_suffix = self.get_direction_suffix(suffix)
         if dir_tag_suffix:
             try:
                 long_direction = directions[dir_tag_suffix]
             except KeyError:
-                self.checkme_ways.append({'name': tags.get('name'),
-                                          'id': self.attrs['id'],
-                                          'reason': 'Direction suffix (%s) not in directions list' % dir_tag_prefix})
+                self.checkme_ways.append(
+                    {'name': tags.get('name'),
+                     'id': self.attrs['id'],
+                     'reason': 'Direction suffix (%s) not in directions list' \
+                         % dir_tag_prefix})
             try:
                 indx = namel.index(dir_tag_suffix)
                 namel[indx] = long_direction
             except ValueError:
-                self.checkme_ways.append({'name': tags.get('name'),
-                                          'id': self.attrs['id'],
-                                          'reason': 'Direction suffix (%s) not in name' % dir_tag_suffix})
+                self.checkme_ways.append(
+                    {'name': tags.get('name'),
+                     'id': self.attrs['id'],
+                     'reason': 'Direction suffix (%s) not in name' \
+                         % dir_tag_suffix})
 
         newname = ' '.join(namel)
         if newname != name:            
@@ -241,6 +257,7 @@ class TigerRoadExpansionHandler(OSMHandler):
             self.num_fixed += 1
 
     def remove_useless_tags(self):
+        """Removes tags that would be removed from JOSM or Potlatch"""
         tags = self.tags
         for tag in ["created_by", "tiger:upload_uuid", "tiger:tlid",
                     "tiger:source", "tiger:separated", "odbl", "odbl:note"]:
@@ -261,6 +278,7 @@ class TigerRoadExpansionHandler(OSMHandler):
             remove(self.fname)
 
 def main():
+    """Function run by command line"""
     argparser = argparse.ArgumentParser(description="Tiger expansion bot")
     argparser.add_argument('--input', dest = 'infname',
                            help = 'The input filename')
@@ -272,10 +290,10 @@ def main():
 
     args = argparser.parse_args()
     if args.infname == '-':
-        input = sys.stdin
+        input_file = sys.stdin
         args.infname = 'expansion'
     else:
-        input = open(args.infname, 'r')
+        input_file = open(args.infname, 'r')
 
     if not args.outdirname:
         args.outdirname = args.infname
@@ -284,7 +302,7 @@ def main():
     parser = make_parser()
     handler = TigerRoadExpansionHandler(dirname)
     parser.setContentHandler(handler)
-    parser.parse(input)
+    parser.parse(input_file)
 
     #print "%d total roads" % handler.roads
     #print "%d fixed roads" % handler.num_fixed
@@ -303,14 +321,14 @@ def main():
     #for key, val in handler.unrecognized_tags.items():
     #    print "%s (%s)" % (key, val)
     if handler.checkme_ways:
-        fd = codecs.open(args.checkways_fname, 'w', 'utf-8')
-        fd.write('ID,Name,Reason\n')
+        outfile = codecs.open(args.checkways_fname, 'w', 'utf-8')
+        outfile.write('ID,Name,Reason\n')
         for i in handler.checkme_ways:
-            id, name, reason = i['id'], i['name'], i['reason']
+            oid, name, reason = i['id'], i['name'], i['reason']
             if ',' in name:
                 name = '"%s"' % name
-            fd.write("%s,%s,%s\n" % (i['id'], i['name'], i['reason']))
-        fd.close()
+            outfile.write("%s,%s,%s\n" % (oid, name, reason))
+        outfile.close()
                      
 if __name__ == '__main__':
     sys.exit(main())
