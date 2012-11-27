@@ -139,6 +139,9 @@ class TigerRoadExpansionHandler(OSMHandler):
                      'reason': 'Direction prefix (%s) not in directions list' \
                          % dir_tag_prefix})
             try:
+                # If we want to be more clever here, we can use the
+                # name_base and index off that, ala:
+                # indx = namel[:namel.index(tags['tiger:name_base' + suffix])]
                 indx = namel.index(dir_tag_prefix)
                 namel[indx] = long_direction
             except ValueError:
