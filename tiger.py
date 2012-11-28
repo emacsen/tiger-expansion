@@ -36,7 +36,7 @@ class TigerRoadExpansionHandler(OSMHandler):
         """Retrieves the road type from the element's tiger tags"""
         tags = self.tags
         name = tags.get('name' + suffix)
-        namel = name.split()
+        split_name = name.split()
         # If we have a name_type that we haven't seen, store it.
         # If the name is ambigious, store it.
         road_type = self.tags.get('tiger:name_type' + suffix)
@@ -51,14 +51,14 @@ class TigerRoadExpansionHandler(OSMHandler):
                      'id': self.attrs['id'],
                      'reason': 'Unknown road_type (%s)' % road_type})
             road_type = None
-        elif namel.count(road_type) > 1:
+        elif split_name.count(road_type) > 1:
             add_or_incr(self.ambigious_expansions, name)
             self.checkme_ways.append({'name': tags.get('name'),
                                       'id': self.attrs['id'],
                                       'reason': 'Ambigious expansion'})
             road_type = None
-        elif namel.count(road_type) < 1:
-            if not namel.count(road_types[road_type]) >= 1:
+        elif split_name.count(road_type) < 1:
+            if not split_name.count(road_types[road_type]) >= 1:
                 self.checkme_ways.append(
                     {'name': tags.get('name'),
                      'id': self.attrs['id'],
@@ -69,7 +69,7 @@ class TigerRoadExpansionHandler(OSMHandler):
     def get_direction_prefix(self, suffix=""):
         """Retrieves the direction prefix from object using the tiger tags"""
         name = self.tags.get('name' + suffix)
-        namel = name.split()
+        split_name = name.split()
         # Same with the direction tags prefix
         dir_tag_prefix = self.tags.get('tiger:name_direction_prefix' + suffix)
         if not dir_tag_prefix:
@@ -78,10 +78,10 @@ class TigerRoadExpansionHandler(OSMHandler):
             add_or_incr(self.unrecognized_direction_tags, dir_tag_prefix)
             dir_tag_prefix = None
         else:
-            if namel.count(dir_tag_prefix) > 1:
+            if split_name.count(dir_tag_prefix) > 1:
                 add_or_incr(self.ambigious_expansions, name)
                 dir_tag_prefix = None
-            elif namel.count(dir_tag_prefix) < 1:
+            elif split_name.count(dir_tag_prefix) < 1:
                 dir_tag_prefix = None
         return dir_tag_prefix
 
@@ -89,7 +89,7 @@ class TigerRoadExpansionHandler(OSMHandler):
         """Retrieves the direction suffix from object using the tiger tags"""
         tags = self.tags
         name = tags.get('name' + suffix)
-        namel = name.split()
+        split_name = name.split()
         dir_tag_suffix = tags.get('tiger:name_direction_suffix' + suffix)
         if not dir_tag_suffix:
             return
@@ -97,10 +97,10 @@ class TigerRoadExpansionHandler(OSMHandler):
             add_or_incr(self.unrecognized_direction_tags, dir_tag_suffix)
             dir_tag_suffix = None
         else:
-            if namel.count(dir_tag_suffix) > 1:
+            if split_name.count(dir_tag_suffix) > 1:
                 add_or_incr(self.ambigious_expansions, name)
                 dir_tag_suffix = None
-            elif namel.count(dir_tag_suffix) < 1:
+            elif split_name.count(dir_tag_suffix) < 1:
                 dir_tag_suffix = None
         return dir_tag_suffix
 
@@ -120,13 +120,13 @@ class TigerRoadExpansionHandler(OSMHandler):
         """Fix a "name" tag, taking an optional suffix (ala '_1')"""
         tags = self.tags
         name = tags['name' + suffix]
-        namel = name.split()
+        split_name = name.split()
 
         short_road_type = self.get_road_type(suffix)        
         if short_road_type:
             long_road_type = road_types[short_road_type]
-            indx = namel.index(short_road_type)
-            namel[indx] = long_road_type
+            indx = split_name.index(short_road_type)
+            split_name[indx] = long_road_type
 
         dir_tag_prefix = self.get_direction_prefix(suffix)
         if dir_tag_prefix:
@@ -141,9 +141,10 @@ class TigerRoadExpansionHandler(OSMHandler):
             try:
                 # If we want to be more clever here, we can use the
                 # name_base and index off that, ala:
-                # indx = namel[:namel.index(tags['tiger:name_base' + suffix])]
-                indx = namel.index(dir_tag_prefix)
-                namel[indx] = long_direction
+                # base_indx = split_name.index(tags['tiger:name_base' + suffix])
+                # indx = split_name[:base_indx]
+                indx = split_name.index(dir_tag_prefix)
+                split_name[indx] = long_direction
             except ValueError:
                 self.checkme_ways.append(
                     {'name': tags.get('name'),
@@ -162,8 +163,8 @@ class TigerRoadExpansionHandler(OSMHandler):
                      'reason': 'Direction suffix (%s) not in directions list' \
                          % dir_tag_prefix})
             try:
-                indx = namel.index(dir_tag_suffix)
-                namel[indx] = long_direction
+                indx = split_name.index(dir_tag_suffix)
+                split_name[indx] = long_direction
             except ValueError:
                 self.checkme_ways.append(
                     {'name': tags.get('name'),
@@ -171,7 +172,7 @@ class TigerRoadExpansionHandler(OSMHandler):
                      'reason': 'Direction suffix (%s) not in name' \
                          % dir_tag_suffix})
 
-        newname = ' '.join(namel)
+        newname = ' '.join(split_name)
         if newname != name:            
             self.tags['name' + suffix] = newname
         self.fixed = True
