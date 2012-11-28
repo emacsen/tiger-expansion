@@ -211,8 +211,10 @@ def main():
     argparser.add_argument('--checkways', dest = 'checkways_fname',
                            default = 'ways.csv',
                            help = "Unfixable way csv file")
-
     args = argparser.parse_args()
+    if not args:
+        argparser.print_help()
+        return -1
     if args.infname == '-':
         input_file = sys.stdin
         args.infname = 'expansion'
