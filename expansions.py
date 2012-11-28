@@ -1,5 +1,8 @@
-# Data from observation and Appendix B (p271) of 
-# http://www.census.gov/geo/www/tiger/tiger2006se/TGR06SE.pdf
+"""
+Data from observation and Appendix B (p271) of 
+http://www.census.gov/geo/www/tiger/tiger2006se/TGR06SE.pdf
+"""
+# tiger:name_type
 road_types = {
     'Aly': 'Alley',
     'Arc': 'Arcade',
@@ -67,6 +70,7 @@ road_types = {
     'Mall': 'Mall',
     }
 
+# tiger:name_direction_prefix/tiger:name_direction_suffix
 directions = {
     'N': 'North',
     'S': 'South',
