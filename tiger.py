@@ -204,7 +204,7 @@ class TigerRoadExpansionHandler(OSMHandler):
 def main():
     """Function run by command line"""
     argparser = argparse.ArgumentParser(description="Tiger expansion bot")
-    argparser.add_argument('--input', dest = 'infname',
+    argparser.add_argument('--infile', dest = 'infname',
                            help = 'The input filename')
     argparser.add_argument('--outdir', dest = 'outdirname',
                            default = 'processed', help = 'The output directory')
