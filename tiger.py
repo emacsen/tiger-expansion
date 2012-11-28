@@ -212,7 +212,7 @@ def main():
                            default = 'ways.csv',
                            help = "Unfixable way csv file")
     args = argparser.parse_args()
-    if not args:
+    if not args.infname:
         argparser.print_help()
         return -1
     if args.infname == '-':
