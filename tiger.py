@@ -174,11 +174,7 @@ class TigerRoadExpansionHandler(OSMHandler):
         newname = ' '.join(namel)
         if newname != name:            
             self.tags['name' + suffix] = newname
-        if not self.fixed:
-            self.bump_version()
-            self.remove_user_changeset()
-            self.fixed = True
-            self.num_fixed += 1
+        self.fixed = True
 
     def remove_useless_tags(self):
         """Removes tags that would be removed from JOSM or Potlatch"""
@@ -193,8 +189,12 @@ class TigerRoadExpansionHandler(OSMHandler):
         for s in suffixes:
             if self.tags.get('name' + s):
                 self.fix_name(s)
+
         if self.fixed:
             self.remove_useless_tags()
+            self.remove_user_changeset()
+            self.bump_version
+            self.num_fixed += 1
 
     def endDocument(self):
         self._close()
