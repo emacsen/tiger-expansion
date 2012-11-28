@@ -111,6 +111,8 @@ class TigerRoadExpansionHandler(OSMHandler):
                 tags.has_key('name')):
             return
 
+        # Furthermore, we only care about elements that contain both a
+        # name and a tiger:name_base
         suffixes = ['', '_1', '_2', '_3', '_4', '_5', '_6', '_7', '_8', '_9']
         for s in suffixes:
             if tags.get('name%s' % s) and tags.get('tiger:name%s_base' %s):
@@ -122,12 +124,14 @@ class TigerRoadExpansionHandler(OSMHandler):
         name = tags['name' + suffix]
         split_name = name.split()
 
+        # First get/fix the road type (tiger:name_type)
         short_road_type = self.get_road_type(suffix)        
         if short_road_type:
             long_road_type = road_types[short_road_type]
             indx = split_name.index(short_road_type)
             split_name[indx] = long_road_type
 
+        # Now fix the direction prefix (if any)
         dir_tag_prefix = self.get_direction_prefix(suffix)
         if dir_tag_prefix:
             try:
@@ -152,6 +156,7 @@ class TigerRoadExpansionHandler(OSMHandler):
                      'reason': 'Direction prefix (%s) not in name' \
                          % dir_tag_prefix})
 
+        # Now fix the direction suffix (if any)
         dir_tag_suffix = self.get_direction_suffix(suffix)
         if dir_tag_suffix:
             try:
@@ -172,10 +177,12 @@ class TigerRoadExpansionHandler(OSMHandler):
                      'reason': 'Direction suffix (%s) not in name' \
                          % dir_tag_suffix})
 
+        # Construct the new name, and if it's different, store it and
+        # set the element as fixed
         newname = ' '.join(split_name)
         if newname != name:            
             self.tags['name' + suffix] = newname
-        self.fixed = True
+            self.fixed = True
 
     def remove_useless_tags(self):
         """Removes tags that would be removed from JOSM or Potlatch"""
