@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-"""This is the base library that can used to run various OSM bots
-which are implemented as plugins"""
+"""This is the TIGER expansion library and command line script"""
 
 import sys
 from xml.sax import make_parser
