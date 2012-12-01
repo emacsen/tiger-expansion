@@ -167,7 +167,7 @@ done. You may want to override it, but probably not"""
                 self.transformElement()
                 if self.fixed:
                     self.emit()
-                self.object_counter = self.object_counter + 1
+                    self.object_counter += 1
                 if self.object_counter >= self.max_objects_per_file:
                     self._close()
             self.clear()
