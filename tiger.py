@@ -198,9 +198,10 @@ class TigerRoadExpansionHandler(OSMHandler):
                 self.fix_name(s)
 
         if self.fixed:
+            self.action = 'modify'
             self.remove_useless_tags()
             self.remove_user_changeset()
-            self.bump_version
+            self.bump_version()
             self.num_fixed += 1
 
     def endDocument(self):
