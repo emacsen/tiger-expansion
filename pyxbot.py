@@ -6,6 +6,8 @@ import os
 import codecs
 from xml.sax.saxutils import escape
 
+__version__ = '0.2'
+
 class OSMHandler(ContentHandler):
     """This is a base OSMHandler class which sets up the XML parsing, etc.
 
@@ -40,10 +42,6 @@ functions"""
         self.out = None
         self.object_counter = 0
         self.file_counter = self.file_counter + 1
-
-    def bump_version(self):
-        """Bump the version number of the element"""
-        self.attrs['version'] = str(int(self.attrs['version']) + 1)
 
     def remove_user_changeset(self):
         """Remove tags from the changeset which we will not use anymore"""
@@ -110,6 +108,7 @@ functions"""
     def clear(self):
         "Initialize the state machine"
         self.type = None
+        self.action = None
         self.tags = {}
         self.nodes = []
         self.members = []
@@ -147,6 +146,7 @@ handler"""
     def deleteElement(self):
         """Returns the string to delete the element. Please use with
 caution!"""
+        self.action = 'delete'
         self.out.write('<delete version="%s" generator="%s">\n' %
                        ("0.6", self.bot_name))
         self.emit()
