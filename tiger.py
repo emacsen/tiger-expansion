@@ -48,20 +48,24 @@ class TigerRoadExpansionHandler(OSMHandler):
                 self.checkme_ways.append(
                     {'name': tags.get('name'),
                      'id': self.attrs['id'],
-                     'reason': 'Unknown road_type (%s)' % road_type})
+                     'reason': 'Unknown road_type (%s)' % (
+                            road_type,
+                            'tiger:name_type' + suffix)})
             road_type = None
         elif split_name.count(road_type) > 1:
             add_or_incr(self.ambigious_expansions, name)
-            self.checkme_ways.append({'name': tags.get('name'),
-                                      'id': self.attrs['id'],
-                                      'reason': 'Ambigious expansion'})
+            self.checkme_ways.append(
+                {'name': tags.get('name'),
+                 'id': self.attrs['id'],
+                 'reason': 'Ambigious expansion of %s on %s' %
+                 (road_type, name)})
             road_type = None
         elif split_name.count(road_type) < 1:
             if not split_name.count(road_types[road_type]) >= 1:
                 self.checkme_ways.append(
                     {'name': tags.get('name'),
                      'id': self.attrs['id'],
-                     'reason': 'Road type (%s) not in name' % road_type})
+                     'reason': 'Road type (%s) not in %s' % (road_type, name)})
             road_type = None
         return road_type
 
