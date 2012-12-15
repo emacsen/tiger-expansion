@@ -48,7 +48,7 @@ class TigerRoadExpansionHandler(OSMHandler):
                 self.checkme_ways.append(
                     {'name': tags.get('name'),
                      'id': self.attrs['id'],
-                     'reason': 'Unknown road_type (%s)' % (
+                     'reason': 'Unknown road_type (%s) on %s' % (
                             road_type,
                             'tiger:name_type' + suffix)})
             road_type = None
@@ -205,7 +205,6 @@ class TigerRoadExpansionHandler(OSMHandler):
             self.action = 'modify'
             self.remove_useless_tags()
             self.remove_user_changeset()
-            self.bump_version()
             self.num_fixed += 1
 
     def endDocument(self):
