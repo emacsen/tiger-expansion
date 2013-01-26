@@ -14,7 +14,7 @@ road_types = {
     'Byp': 'Bypass',
     'Cir': 'Circle',
     'Cres': 'Crescent',
-    'Cswy': 'Crossway',
+    'Cswy': 'Causeway',
     'Ct': 'Court',
     'Ctr': 'Center',
     'Cv': 'Cove',
